@@ -1,0 +1,12 @@
+// SPDX-License-Identifier: GPL-3.0-only
+pragma solidity >=0.8.0;
+
+contract SimpleContract {
+
+    mapping(uint256 => string) public messages;
+    
+    function setMessage(uint256 id, string calldata m) external {
+        messages[id] = m;
+    }
+
+}

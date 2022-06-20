@@ -1,8 +1,11 @@
 const hre = require("hardhat");
 
+// npx hardhat run scripts/batchTest.js --network moonbase
+
 async function main() {
   await hre.run("compile");
 
+  // Get relevant interfaces
   const batch = await hre.ethers
     .getContractAt("Batch", "0x0000000000000000000000000000000000000808");
   const simple = await hre.ethers
@@ -10,20 +13,30 @@ async function main() {
 
   console.log("Batch and simple contract found.");
 
-  const to = [ simple.address, simple.address, simple.address ];
-  const value = [ 0, 0, 0 ];
-  const gasLimit = [ 70000, 70000, 70000 ];
-  const callData = [];
-
-  /*
-  648345c8                                                            // selector
-  0000000000000000000000000000000000000000000000000000000000000064    // uint256
+  /* 
+  Transaction calldata breakdown
+  648345c8                                                            // func selector
+  0000000000000000000000000000000000000000000000000000000000000064    // uint256 (100)
   0000000000000000000000000000000000000000000000000000000000000040    // Offset
-  0000000000000000000000000000000000000000000000000000000000000011    // Length
-  68656c6c6f206920616d206a6572656d79000000000000000000000000000000    // Text
+  0000000000000000000000000000000000000000000000000000000000000011    // Length (11)
+  68656c6c6f206920616d206a6572656d79000000000000000000000000000000    // Text (hello i am jeremy)
+
+  Make 5 transactions for batch vvv
   */
+  const to = [], value = [], gasLimit = [], callData = [];
+  const messages = [ 'jeremy', 'erin', 'alberto', 'kevin', 'henry' ];
+  const ids = [ 5, 10, 15, 20, 25 ];
+  for(let i = 0; i < messages.length; i++) {
+    to[i] = simple.address;
+    value[i] = 0;
+    gasLimit[i] = 70000;
+    callData[i] = simple.interface.encodeFunctionData("setMessage", [
+      ids[i],
+      messages[i]
+    ]);
+  }
   
-  // Send to the relay chain
+  // Send batch transaction
   const res = await batch.batchSome(
     to,
     value,

@@ -1,6 +1,7 @@
 const hre = require("hardhat");
 
 // npx hardhat run scripts/batchTest.js --network moonbase
+// SimpleContract was deployed with remix beforehand 0x9Ed1703f8ed4863e561d921F8bEdFb9e8430B893
 
 async function main() {
   await hre.run("compile");
